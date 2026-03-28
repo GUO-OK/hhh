@@ -12,13 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: List project files
-        run: |
-          echo "=== 项目根目录内容 ==="
-          ls -la
-          echo "=== 查找所有 Python 文件 ==="
-          find . -name "*.py" -type f
-
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -29,32 +22,46 @@ jobs:
         with:
           flutter-version: '3.19.6'
           channel: 'stable'
+          cache: true
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
 
-      - name: Accept Android licenses
+      - name: Verify Flutter installation
         run: |
-          yes | flutter doctor --android-licenses || true
-
-      - name: Verify environment
-        run: |
+          echo "=== Flutter 版本 ==="
           flutter --version
+          echo "=== Flutter 路径 ==="
+          which flutter
+          echo "=== Flutter Doctor ==="
           flutter doctor -v
 
       - name: Install Flet
         run: |
+          pip install --upgrade pip
           pip install flet
+
+      - name: List Python files
+        run: |
+          echo "=== 所有 Python 文件 ==="
+          find . -name "*.py" -type f
 
       - name: Build APK
         run: |
-          # 检查 main.py 是否存在
+          # 确保 Flutter 在 PATH 中
+          export PATH="$PATH:$HOME/flutter/bin"
+          echo "PATH: $PATH"
+          
+          # 检查 main.py
           if [ ! -f "main.py" ]; then
-            echo "错误：未找到 main.py 文件"
-            echo "请在项目根目录创建 main.py 文件"
+            echo "错误：未找到 main.py"
             exit 1
           fi
-          flet build apk --org com.yourcompany.travelapp
+          
+          # 构建 APK
+          flet build apk --org com.yourcompany.travelapp --verbose
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
