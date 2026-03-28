@@ -1,16 +1,27 @@
-# 这是一个示例 Python 脚本。
+import flet as ft
 
-# 按 Shift+F10 执行或将其替换为您的代码。
-# 按 双击 Shift 在所有地方搜索类、文件、工具窗口、操作和设置。
+def main(page: ft.Page):
+    # 设置页面标题
+    page.title = "Travel App"
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    
+    # 添加一个简单的文本
+    hello_text = ft.Text("欢迎使用 Travel App!", size=30, color=ft.Colors.BLUE)
+    
+    # 添加一个按钮
+    def button_clicked(e):
+        hello_text.value = "按钮被点击了!"
+        page.update()
+    
+    button = ft.ElevatedButton("点击我", on_click=button_clicked)
+    
+    # 添加到页面
+    page.add(
+        hello_text,
+        ft.Container(height=20),  # 间距
+        button
+    )
 
-
-def print_hi(name):
-    # 在下面的代码行中使用断点来调试脚本。
-    print(f'Hi, {name}')  # 按 Ctrl+F8 切换断点。
-
-
-# 按装订区域中的绿色按钮以运行脚本。
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
+# 启动应用
+ft.app(target=main)
