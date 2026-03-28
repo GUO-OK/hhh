@@ -17,10 +17,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Setup Flutter
+      - name: Setup Flutter 3.41.4
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.6'
+          flutter-version: '3.41.4'
           channel: 'stable'
           cache: true
 
@@ -29,13 +29,10 @@ jobs:
         with:
           accept-android-sdk-licenses: true
 
-      - name: Verify Flutter installation
+      - name: Verify Flutter
         run: |
-          echo "=== Flutter 版本 ==="
           flutter --version
-          echo "=== Flutter 路径 ==="
           which flutter
-          echo "=== Flutter Doctor ==="
           flutter doctor -v
 
       - name: Install Flet
@@ -45,22 +42,14 @@ jobs:
 
       - name: List Python files
         run: |
-          echo "=== 所有 Python 文件 ==="
           find . -name "*.py" -type f
 
       - name: Build APK
         run: |
-          # 确保 Flutter 在 PATH 中
-          export PATH="$PATH:$HOME/flutter/bin"
-          echo "PATH: $PATH"
-          
-          # 检查 main.py
           if [ ! -f "main.py" ]; then
             echo "错误：未找到 main.py"
             exit 1
           fi
-          
-          # 构建 APK
           flet build apk --org com.yourcompany.travelapp --verbose
 
       - name: Upload APK
