@@ -2,8 +2,7 @@ import flet as ft
 import threading
 import asyncio
 from config import COLORS, SYSTEM_PROMPT, UI_STYLES, BACKGROUND_IMAGE_1, TEXTFIELD_STYLES, PAGE_CONTAINER_STYLES
-from services.deepseek import DeepSeekClient
-
+# from services.deepseek import DeepSeekClient
 
 def ai_custom_page(page: ft.Page):
     print("走一走啊啊啊啊啊啊啊啊")
@@ -102,7 +101,16 @@ def ai_custom_page(page: ft.Page):
         visible=False,
     )
 
-    ds_client = DeepSeekClient(page)
+    ds_client = None
+
+    def get_client():
+        nonlocal ds_client
+        if ds_client is None:
+            print("创建客户段")
+            from services.deepseek import DeepSeekClient
+            ds_client = DeepSeekClient(page)
+            print("完成")
+        return ds_client
 
     def generate(e):
         print("出不出来")
@@ -129,6 +137,7 @@ def ai_custom_page(page: ft.Page):
         print("？何意味")
 
         async def call_api_async():
+            client = get_client()
             prompt = f"""{SYSTEM_PROMPT}
 
     用户需求：
