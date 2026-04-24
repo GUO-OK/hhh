@@ -35,14 +35,30 @@ jobs:
           which flutter
           flutter doctor -v
 
-      - name: Install Flet
+      - name: Install Flet and dependencies
         run: |
           pip install --upgrade pip
-          pip install flet
+          pip install flet pymysql python-dotenv
 
       - name: List Python files
         run: |
           find . -name "*.py" -type f
+
+      - name: Create .env file from Secrets
+        run: |
+          # 创建 .env 文件（从 GitHub Secrets 读取）
+          echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" > .env
+          echo "DEEPSEEK_BASE_URL=${{ secrets.DEEPSEEK_BASE_URL }}" >> .env
+          echo "DEEPSEEK_MODEL=${{ secrets.DEEPSEEK_MODEL }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          
+          # 显示 .env 已创建（不显示内容，保密）
+          echo "✅ .env 文件创建成功"
+          ls -la .env
 
       - name: Build APK
         run: |
