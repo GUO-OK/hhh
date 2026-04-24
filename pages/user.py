@@ -14,6 +14,7 @@ def user_page(page: ft.Page, is_logged_in=False, username=""):
             expand=True,
             width=float('inf'),
             content=ft.Column(
+                scroll=ft.ScrollMode.AUTO,
                 expand=True,
                 width=float('inf'),
                 controls=[
@@ -51,6 +52,7 @@ def user_page(page: ft.Page, is_logged_in=False, username=""):
                                color=USER_STYLES["username"]["color"])
 
         user_row = ft.Row(
+            scroll=ft.ScrollMode.AUTO,
             controls=[avatar_container, ft.Column(controls=[username_text], spacing=5)],
             spacing=15,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
@@ -68,6 +70,7 @@ def user_page(page: ft.Page, is_logged_in=False, username=""):
         def menu_item(title):
             container = ft.Container(
                 content=ft.Row(
+                    scroll=ft.ScrollMode.AUTO,
                     controls=[
                         ft.Text(title,
                                 size=USER_STYLES["menu_item"]["text_size"],
@@ -112,6 +115,7 @@ def user_page(page: ft.Page, is_logged_in=False, username=""):
 
         menu_card = ft.Container(
             content=ft.Column(
+                scroll=ft.ScrollMode.AUTO,
                 controls=[
                     menu_item("修改密码"),
                     ft.Divider(height=1, color=ft.Colors.GREY_200),
@@ -129,6 +133,7 @@ def user_page(page: ft.Page, is_logged_in=False, username=""):
             expand=True,
             width=float('inf'),
             content=ft.Column(
+                scroll=ft.ScrollMode.AUTO,
                 expand=True,
                 width=float('inf'),
                 controls=[
