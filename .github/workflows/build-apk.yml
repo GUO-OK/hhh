@@ -46,7 +46,6 @@ jobs:
 
       - name: Create .env file from Secrets
         run: |
-          # 创建 .env 文件（从 GitHub Secrets 读取）
           echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" > .env
           echo "DEEPSEEK_BASE_URL=${{ secrets.DEEPSEEK_BASE_URL }}" >> .env
           echo "DEEPSEEK_MODEL=${{ secrets.DEEPSEEK_MODEL }}" >> .env
@@ -56,8 +55,6 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
           
-          # 显示 .env 已创建（不显示内容，保密）
-          echo "✅ .env 文件创建成功"
           ls -la .env
 
       - name: Build APK
