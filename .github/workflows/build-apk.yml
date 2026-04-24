@@ -38,7 +38,7 @@ jobs:
       - name: Install Flet and dependencies
         run: |
           pip install --upgrade pip
-          pip install flet pymysql python-dotenv
+          pip install flet python-dotenv requests
 
       - name: List Python files
         run: |
@@ -53,9 +53,15 @@ jobs:
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env          
           ls -la .env
+      
+      - name: Ensure database.db exists
+        run: |
+                if [ ! -f "database.db" ]; then
+                  python -c "import sqlite3; conn = sqlite3.connect('database.db'); conn.close()"
+                fi
+                ls -la database.db
 
       - name: Build APK
         run: |
