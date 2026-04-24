@@ -1,7 +1,7 @@
 import flet as ft
 
 # DeepSeek API 配置
-DEEPSEEK_API_KEY = "sk-14b1e343c7b349079dc4934b28598887"
+DEEPSEEK_API_KEY = 
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEEPSEEK_MODEL = "deepseek-chat"
 
