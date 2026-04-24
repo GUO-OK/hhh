@@ -24,44 +24,27 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          accept-android-sdk-licenses: true
-
-      - name: Verify Flutter
-        run: |
-          flutter --version
-          which flutter
-          flutter doctor -v
-
       - name: Install Flet and dependencies
         run: |
           pip install --upgrade pip
           pip install flet python-dotenv requests
-
-      - name: List Python files
-        run: |
-          find . -name "*.py" -type f
 
       - name: Create .env file from Secrets
         run: |
           echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" > .env
           echo "DEEPSEEK_BASE_URL=${{ secrets.DEEPSEEK_BASE_URL }}" >> .env
           echo "DEEPSEEK_MODEL=${{ secrets.DEEPSEEK_MODEL }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env          
-          ls -la .env
-      
-      - name: Ensure database.db exists
+          echo ".env 文件创建成功"
+          cat .env
+
+      - name: Verify database.db
         run: |
-                if [ ! -f "database.db" ]; then
-                  python -c "import sqlite3; conn = sqlite3.connect('database.db'); conn.close()"
-                fi
-                ls -la database.db
+          if [ ! -f "database.db" ]; then
+            echo "database.db 不存在，将使用空数据库"
+            python -c "import sqlite3; conn = sqlite3.connect('database.db'); conn.close()"
+          else
+            ls -lh database.db
+          fi
 
       - name: Build APK
         run: |
@@ -71,8 +54,12 @@ jobs:
           fi
           flet build apk --org com.yourcompany.travelapp --verbose
 
+      - name: Find and upload APK
+        run: |
+          echo "查找生成的 APK 文件..."
+          find build -name "*.apk" -type f
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: travel-app-apk
-          path: build/apk/
+          path: build/**/*.apk
