@@ -1,4 +1,5 @@
 import os
+import sys
 import sqlite3
 from typing import List, Dict, Any
 from dotenv import load_dotenv
@@ -8,7 +9,23 @@ load_dotenv()
 class Database:
     def __init__(self):
         self.connection = None
-        self.db_path = os.getenv('SQLITE_DB_PATH', 'database.db')
+        self.db_path = self._get_db_path()
+        print(f"数据库路径: {self.db_path}")
+        if not os.path.exists(self.db_path):
+            print(f"数据库文件不存在: {self.db_path}")
+
+    def _get_db_path(self):
+        env_path = os.getenv('SQLITE_DB_PATH')
+        if env_path:
+            return env_path
+
+        if getattr(sys, 'frozen', False):
+            base_path = sys._MEIPASS
+        else:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+
+        return os.path.join(base_path, 'database.db')
+
 
     def connect(self):
         try:
