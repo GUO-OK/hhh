@@ -1,4 +1,3 @@
-# pages/favorites.py
 import flet as ft
 from config import COLORS, BACKGROUND_IMAGE_2, SEARCH_STYLES, CARD_STYLES, PAGE_CONTAINER_STYLES
 from services.database import db

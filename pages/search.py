@@ -2,7 +2,6 @@ import flet as ft
 from config import COLORS, BACKGROUND_IMAGE_2, CARD_STYLES, SEARCH_STYLES, PAGE_CONTAINER_STYLES
 from services.database import db
 
-
 def result_page(page, search_params, on_back=None, username=None, is_logged_in=False):
     print(f"search_params: {search_params}")
 

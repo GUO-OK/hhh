@@ -1,7 +1,6 @@
 import flet as ft
 from config import UI_STYLES, COLORS,BACKGROUND_IMAGE_1
 
-
 def home_page_component(on_search=None):
     day_range = ft.Dropdown(
         label="旅行天数",

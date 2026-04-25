@@ -1,4 +1,3 @@
-# custom_AI.py - 修复异步回调问题
 import flet as ft
 import threading
 import asyncio

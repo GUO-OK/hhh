@@ -2,7 +2,6 @@ import asyncio
 import flet as ft
 from config import WELCOME_STYLES
 
-
 def welcome_page(page: ft.Page,  on_complete):
     is_completed = False
 
