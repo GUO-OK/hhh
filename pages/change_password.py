@@ -1,7 +1,7 @@
 # pages/change_password.py
 import flet as ft
-from config import COLORS, UI_STYLES, BACKGROUND_IMAGE_2, TEXTFIELD_STYLES, PAGE_CONTAINER_STYLES
-from database import db
+from config import UI_STYLES, BACKGROUND_IMAGE_2, TEXTFIELD_STYLES, PAGE_CONTAINER_STYLES
+from services.database import db
 
 
 def change_password_page(page: ft.Page, username: str, on_back=None):
@@ -116,7 +116,7 @@ def change_password_page(page: ft.Page, username: str, on_back=None):
             ],
             alignment=ft.MainAxisAlignment.START,
         ),
-        padding=ft.padding.all(15),
+        padding=ft.padding.all(5),
         bgcolor=ft.Colors.WHITE,
         shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color=ft.Colors.BLACK12),
     )
@@ -160,7 +160,7 @@ def change_password_page(page: ft.Page, username: str, on_back=None):
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         alignment=ft.MainAxisAlignment.CENTER,
                     ),
-                    padding=ft.padding.all(40),
+                    padding=ft.padding.all(10),
                 ),
             ],
             spacing=0,

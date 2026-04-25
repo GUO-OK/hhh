@@ -1,7 +1,7 @@
 # pages/favorites.py
 import flet as ft
 from config import COLORS, BACKGROUND_IMAGE_2, SEARCH_STYLES, CARD_STYLES, PAGE_CONTAINER_STYLES
-from database import db
+from services.database import db
 
 
 def favorites_page(page: ft.Page, username: str, on_back=None):

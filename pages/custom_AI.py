@@ -1,11 +1,12 @@
+# custom_AI.py - 修复异步回调问题
 import flet as ft
 import threading
 import asyncio
 from config import COLORS, SYSTEM_PROMPT, UI_STYLES, BACKGROUND_IMAGE_1, TEXTFIELD_STYLES, PAGE_CONTAINER_STYLES
-# from services.deepseek import DeepSeekClient
+
 
 def ai_custom_page(page: ft.Page):
-    print("走一走啊啊啊啊啊啊啊啊")
+    print("AI定制页面加载")
 
     destination = ft.TextField(
         label="目的地城市",
@@ -106,52 +107,55 @@ def ai_custom_page(page: ft.Page):
     def get_client():
         nonlocal ds_client
         if ds_client is None:
-            print("创建客户段")
+            print("创建客户端")
             from services.deepseek import DeepSeekClient
             ds_client = DeepSeekClient(page)
-            print("完成")
+            print("客户端创建完成")
         return ds_client
 
     def generate(e):
-        print("出不出来")
+        print("开始生成")
 
         if not destination.value or not days.value:
-            print("能不能干")
+            print("缺少必要信息")
             page.snack_bar = ft.SnackBar(ft.Text("请填写目的地和天数"))
             page.snack_bar.open = True
             page.update()
             return
 
-        print(f"去哪: {destination.value}")
-        print(f"几天: {days.value}")
+        print(f"目的地: {destination.value}, 天数: {days.value}")
 
         btn = e.control
-
         result_text.value = ""
-
         loading_container.visible = True
         result_container.visible = False
         btn.text = "生成中..."
         btn.disabled = True
         page.update()
-        print("？何意味")
 
-        async def call_api_async():
-            client = get_client()
-            prompt = f"""{SYSTEM_PROMPT}
+        def sync_call():
+            try:
+                print("进入线程")
+                client = get_client()
+                prompt = f"""{SYSTEM_PROMPT}
 
-    用户需求：
-    目的地：{destination.value}
-    天数：{days.value}
-    人群：{people.value if people.value else "不限"}
-    预算：{budget.value if budget.value else "不限"}
-    偏好：{preference.value if preference.value else "不限"}"""
+用户需求：
+目的地：{destination.value}
+天数：{days.value}
+人群：{people.value if people.value else "不限"}
+预算：{budget.value if budget.value else "不限"}
+偏好：{preference.value if preference.value else "不限"}"""
 
-            print(f"调用了吗")
+                print(f"调用API...")
+                reply, error = client.send_message(prompt)
+                return reply, error
+            except Exception as e:
+                print(f"线程异常: {e}")
+                import traceback
+                traceback.print_exc()
+                return None, f"{str(e)}\n\n{traceback.format_exc()}"
 
-            loop = asyncio.get_event_loop()
-            reply, error = await loop.run_in_executor(None, ds_client.send_message, prompt)
-
+        async def update_ui_async(reply, error):
             loading_container.visible = False
             result_container.visible = True
 
@@ -164,10 +168,46 @@ def ai_custom_page(page: ft.Page):
 
             btn.text = "生成旅行计划"
             btn.disabled = False
-            page.update()
-            print("为啥不显示，你也要造反吗，结果函数")
+            await page.update_async()
+            print("UI更新完成")
 
-        asyncio.create_task(call_api_async())
+        async def error_ui_async(error_msg):
+            loading_container.visible = False
+            result_container.visible = True
+            result_text.value = f"出错了：{error_msg}"
+            result_text.color = ft.Colors.RED
+            btn.text = "生成旅行计划"
+            btn.disabled = False
+            await page.update_async()
+
+        def on_result(future):
+            try:
+                reply, error = future.result()
+                asyncio.run_coroutine_threadsafe(
+                    update_ui_async(reply, error),
+                    asyncio.get_event_loop()
+                )
+            except Exception as e:
+                print(f"回调异常: {e}")
+                import traceback
+                traceback.print_exc()
+                asyncio.run_coroutine_threadsafe(
+                    error_ui_async(f"{str(e)}\n\n{traceback.format_exc()}"),
+                    asyncio.get_event_loop()
+                )
+
+        def run_async_in_thread():
+            new_loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(new_loop)
+
+            future = new_loop.run_in_executor(None, sync_call)
+            future.add_done_callback(on_result)
+
+            new_loop.run_forever()
+
+        thread = threading.Thread(target=run_async_in_thread, daemon=True)
+        thread.start()
+        print("异步任务已启动")
 
     generate_btn = ft.ElevatedButton(
         "生成旅行计划",

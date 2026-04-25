@@ -1,6 +1,6 @@
 import flet as ft
 from config import COLORS, BACKGROUND_IMAGE_2, CARD_STYLES, SEARCH_STYLES, PAGE_CONTAINER_STYLES
-from database import db
+from services.database import db
 
 
 def result_page(page, search_params, on_back=None, username=None, is_logged_in=False):
@@ -56,14 +56,20 @@ def result_page(page, search_params, on_back=None, username=None, is_logged_in=F
     search_info = ft.Container(
         expand=True,
         width=float('inf'),
-        content=ft.Row(
+        content=ft.Column(
             scroll=ft.ScrollMode.AUTO,
             expand=True,
             width=float('inf'),
             controls=[
-                ft.Text(f"天数: {day_range}", size=16, color=COLORS["primary"]),
-                ft.Text(f"校区: {route_type}", size=16, color=COLORS["primary"]),
-                ft.Text(f"预算: {budget_level}", size=16, color=COLORS["primary"]),
+                ft.Container(
+                    content=ft.Text(f"天数: {day_range}", size=16, color=COLORS["primary"]),
+                ),
+                ft.Container(
+                    content=ft.Text(f"校区: {route_type}", size=16, color=COLORS["primary"]),
+                ),
+                ft.Container(
+                    content=ft.Text(f"预算: {budget_level}", size=16, color=COLORS["primary"]),
+                ),
             ],
             spacing=20,
             alignment=ft.MainAxisAlignment.CENTER,
@@ -111,22 +117,29 @@ def result_page(page, search_params, on_back=None, username=None, is_logged_in=F
                                 ],
                                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                             ),
-                            ft.Text(f"📅 happy时间：{row.get('day_range', '')} | 💰 大致预算：{row.get('budget_level', '')}",
+                            ft.Text(f"📅 happy时间：{row.get('day_range', '')} ",
+                                    size=SEARCH_STYLES["result_text"]["detail_size"],
+                                    color=SEARCH_STYLES["result_text"]["detail_color"]),
+                            ft.Text(f"💰 类型：{row.get('budget_level', '')}",
                                     size=SEARCH_STYLES["result_text"]["detail_size"],
                                     color=SEARCH_STYLES["result_text"]["detail_color"]),
                             ft.Text(f"🏷️ 你是我的tags~：{row.get('tags', '')}",
                                     size=SEARCH_STYLES["result_text"]["detail_size"],
                                     color=SEARCH_STYLES["result_text"]["detail_color"]),
-                            ft.Text(f"📝 大致路线：{row.get('route_details', '')}",
+                            ft.Text(f"📝 大致路线："
+                                    f"{row.get('route_details', '')}",
                                     size=SEARCH_STYLES["result_text"]["detail_size"],
                                     color=SEARCH_STYLES["result_text"]["detail_color"]),
-                            ft.Text(f"🍽️ 恰饭恰饭：{row.get('dining', '')}",
+                            ft.Text(f"🍽️ 恰饭恰饭："
+                                    f"{row.get('dining', '')}",
                                     size=SEARCH_STYLES["result_text"]["detail_size"],
                                     color=SEARCH_STYLES["result_text"]["detail_color"]),
-                            ft.Text(f"🏨 碎觉碎觉：{row.get('accommodation', '')}",
+                            ft.Text(f"🏨 碎觉碎觉："
+                                    f"{row.get('accommodation', '')}",
                                     size=SEARCH_STYLES["result_text"]["detail_size"],
                                     color=SEARCH_STYLES["result_text"]["detail_color"]),
-                            ft.Text(f"💰 财来财来财从四面八方来：{row.get('cost_estimation', '')}",
+                            ft.Text(f"💰 大致预算："
+                                    f"{row.get('cost_estimation', '')}",
                                     size=SEARCH_STYLES["result_text"]["detail_size"],
                                     color=SEARCH_STYLES["result_text"]["detail_color"]),
                         ],
@@ -159,26 +172,37 @@ def result_page(page, search_params, on_back=None, username=None, is_logged_in=F
             scroll=ft.ScrollMode.AUTO,
             controls=[
                 ft.Container(
-                    content=ft.Row(
+                    expand=True,
+                    width=float('inf'),
+                    content=ft.Column(
                         scroll=ft.ScrollMode.AUTO,
-                        controls=[ft.Text("搜索结果",
-                                          size=SEARCH_STYLES["header"]["size"],
-                                          weight=SEARCH_STYLES["header"]["weight"],
-                                          color=SEARCH_STYLES["header"]["color"])],
-                        alignment=ft.MainAxisAlignment.START,
-                        spacing=10
+                        controls=[
+                            ft.Text("搜索结果",
+                                size=SEARCH_STYLES["header"]["size"],
+                                weight=SEARCH_STYLES["header"]["weight"],
+                                color=SEARCH_STYLES["header"]["color"])],
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        spacing=20,
                     ),
-                    padding=ft.padding.all(15),
-                    bgcolor=ft.Colors.WHITE,
-                    shadow=ft.BoxShadow(spread_radius=1, blur_radius=5, color=ft.Colors.BLACK12)
+                    padding=ft.padding.all(10),
                 ),
-                ft.Container(expand=True, width=float('inf'),
-                             content=ft.Column(controls=[search_info, results_container], spacing=20),
-                             padding=ft.padding.all(20)),
+                ft.Container(
+                    expand=True,
+                    width=float('inf'),
+                    content=ft.Column(
+                        controls=[
+                            search_info,
+                            results_container],
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        spacing=20
+                    ),
+                    padding=ft.padding.all(10)),
             ],
             spacing=0,
         ),
-        padding=ft.padding.all(PAGE_CONTAINER_STYLES["content_card"]["padding"]),
+        padding=ft.padding.only(left=0, right=0, top=10, bottom=10),
         border_radius=PAGE_CONTAINER_STYLES["content_card"]["border_radius"],
     )
 

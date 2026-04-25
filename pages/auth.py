@@ -1,6 +1,6 @@
 import flet as ft
 from config import COLORS,UI_STYLES, BACKGROUND_IMAGE_3, TEXTFIELD_STYLES, AUTH_STYLES, PAGE_CONTAINER_STYLES
-from database import db
+from services.database import db
 
 
 def login_page(page: ft.Page, on_login_success=None):
@@ -114,7 +114,6 @@ def login_page(page: ft.Page, on_login_success=None):
 
 
 def register_page(page: ft.Page, on_register_success=None):
-    """注册页面"""
     username_input = ft.TextField(
         label="用户名",
         width=TEXTFIELD_STYLES["width"],

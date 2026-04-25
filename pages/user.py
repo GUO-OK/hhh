@@ -1,7 +1,7 @@
 import flet as ft
 from config import COLORS, UI_STYLES, BACKGROUND_IMAGE_2, USER_STYLES, CARD_STYLES, PAGE_CONTAINER_STYLES
 
-def user_page(page: ft.Page, is_logged_in=False, username=""):
+def user_page(page: ft.Page, is_logged_in=False, username="", on_logout=None):
 
     def go_to_favorites(e):
         page.go("/favorites")
@@ -87,13 +87,10 @@ def user_page(page: ft.Page, is_logged_in=False, username=""):
                 container.on_click = go_to_favorites
             elif title == "修改密码":
                 container.on_click = go_to_change_password
-            else:
-                container.on_click = lambda e: print(f"点击了{title}")
             return container
 
         def logout(e):
-            page.go("/login")
-            page.update()
+                page.go("/login")
 
         logout_btn = ft.Container(
             content=ft.ElevatedButton(
@@ -135,7 +132,7 @@ def user_page(page: ft.Page, is_logged_in=False, username=""):
                 width=float('inf'),
                 controls=[
                     ft.Container(
-                        content=ft.Text("我的",
+                        content=ft.Text("你好^^"+username,
                                       size=USER_STYLES["section_title"]["size"],
                                       weight=USER_STYLES["section_title"]["weight"],
                                       color=USER_STYLES["section_title"]["color"]),
