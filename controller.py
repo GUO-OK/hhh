@@ -29,14 +29,14 @@ class PageManager:
             self.main_page.snack_bar.open = True
             self.main_page.update()
 
-    def on_register_success(self, username):
+    def on_register_success(self,username):
         if self.main_page:
             self.main_page.snack_bar = ft.SnackBar(ft.Text(f"注册成功，请登录"))
             self.main_page.snack_bar.open = True
             self.main_page.go("/login")
             self.main_page.update()
 
-    def route_change(self, e):
+    def route_change(self):
         route = self.main_page.route
         print(f"路由变化: {route}")
 
@@ -47,6 +47,8 @@ class PageManager:
         elif route == "/user":
             self.page_content.content = user_page(self.main_page, self.is_logged_in, self.current_user)
         elif route == "/login":
+            self.is_logged_in = False
+            self.current_user = None
             self.page_content.content = login_page(self.main_page, on_login_success=self.on_login_success)
         elif route == "/register":
             self.page_content.content = register_page(self.main_page, on_register_success=self.on_register_success)

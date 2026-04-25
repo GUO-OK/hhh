@@ -24,15 +24,14 @@ class Database:
         else:
             base_path = os.path.dirname(os.path.abspath(__file__))
 
-        return os.path.join(base_path, 'database.db')
-
+        return os.path.join(base_path, '../database.db')
 
     def connect(self):
         try:
             self.connection = sqlite3.connect(self.db_path)
-            self.connection.row_factory = sqlite3.Row  
-            print("数据库来玩啊")  
-            self._init_tables() 
+            self.connection.row_factory = sqlite3.Row  # 使返回结果可以像字典一样访问
+            print("数据库来玩啊")  # 调试信息
+            self._init_tables()  # 初始化表结构
             return True
         except Exception as e:
             print(f"数据库拒绝了您的邀请: {e}")
