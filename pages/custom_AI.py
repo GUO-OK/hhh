@@ -1,5 +1,4 @@
 import flet as ft
-import threading
 import asyncio
 from config import COLORS, SYSTEM_PROMPT, UI_STYLES, BACKGROUND_IMAGE_1, TEXTFIELD_STYLES, PAGE_CONTAINER_STYLES
 
@@ -112,14 +111,15 @@ def ai_custom_page(page: ft.Page):
             print("客户端创建完成")
         return ds_client
 
-    def generate(e):
+    # 异步生成函数
+    async def generate_async(e):
         print("开始生成")
 
         if not destination.value or not days.value:
             print("缺少必要信息")
             page.snack_bar = ft.SnackBar(ft.Text("请填写目的地和天数"))
             page.snack_bar.open = True
-            page.update()
+            page.update()  # 同步更新
             return
 
         print(f"目的地: {destination.value}, 天数: {days.value}")
@@ -132,11 +132,10 @@ def ai_custom_page(page: ft.Page):
         btn.disabled = True
         page.update()
 
-        def sync_call():
-            try:
-                print("进入线程")
-                client = get_client()
-                prompt = f"""{SYSTEM_PROMPT}
+        try:
+            print("开始调用API...")
+            client = get_client()
+            prompt = f"""{SYSTEM_PROMPT}
 
 用户需求：
 目的地：{destination.value}
@@ -145,16 +144,9 @@ def ai_custom_page(page: ft.Page):
 预算：{budget.value if budget.value else "不限"}
 偏好：{preference.value if preference.value else "不限"}"""
 
-                print(f"调用API...")
-                reply, error = client.send_message(prompt)
-                return reply, error
-            except Exception as e:
-                print(f"线程异常: {e}")
-                import traceback
-                traceback.print_exc()
-                return None, f"{str(e)}\n\n{traceback.format_exc()}"
+            # 在线程池中运行同步代码
+            reply, error = await asyncio.to_thread(client.send_message, prompt)
 
-        async def update_ui_async(reply, error):
             loading_container.visible = False
             result_container.visible = True
 
@@ -165,48 +157,19 @@ def ai_custom_page(page: ft.Page):
                 result_text.value = reply
                 result_text.color = COLORS["black"]
 
-            btn.text = "生成旅行计划"
-            btn.disabled = False
-            await page.update_async()
-            print("UI更新完成")
-
-        async def error_ui_async(error_msg):
+        except Exception as e:
+            print(f"生成异常: {e}")
             loading_container.visible = False
             result_container.visible = True
-            result_text.value = f"出错了：{error_msg}"
+            result_text.value = f"出错了：{str(e)}"
             result_text.color = ft.Colors.RED
+            import traceback
+            traceback.print_exc()
+        finally:
             btn.text = "生成旅行计划"
             btn.disabled = False
-            await page.update_async()
-
-        def on_result(future):
-            try:
-                reply, error = future.result()
-                asyncio.run_coroutine_threadsafe(
-                    update_ui_async(reply, error),
-                    asyncio.get_event_loop()
-                )
-            except Exception as e:
-                print(f"回调异常: {e}")
-                import traceback
-                traceback.print_exc()
-                asyncio.run_coroutine_threadsafe(
-                    error_ui_async(f"{str(e)}\n\n{traceback.format_exc()}"),
-                    asyncio.get_event_loop()
-                )
-
-        def run_async_in_thread():
-            new_loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(new_loop)
-
-            future = new_loop.run_in_executor(None, sync_call)
-            future.add_done_callback(on_result)
-
-            new_loop.run_forever()
-
-        thread = threading.Thread(target=run_async_in_thread, daemon=True)
-        thread.start()
-        print("异步任务已启动")
+            page.update()  # 同步更新
+            print("UI更新完成")
 
     generate_btn = ft.ElevatedButton(
         "生成旅行计划",
@@ -217,7 +180,7 @@ def ai_custom_page(page: ft.Page):
             bgcolor=UI_STYLES["button"]["primary"]["bgcolor"],
             color=UI_STYLES["button"]["primary"]["color"],
         ),
-        on_click=generate,
+        on_click=lambda e: asyncio.create_task(generate_async(e)),
     )
 
     form = ft.Column(

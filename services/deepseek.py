@@ -1,4 +1,4 @@
-from openai import OpenAI
+import openai
 from config import (
     DEEPSEEK_API_KEY,
     DEEPSEEK_BASE_URL,
@@ -13,10 +13,8 @@ class DeepSeekClient:
     def __init__(self, page):
         print("嗨，理理我")
         self.page = page
-        self.client = OpenAI(
-            api_key=DEEPSEEK_API_KEY,
-            base_url=DEEPSEEK_BASE_URL
-        )
+        openai.api_key = DEEPSEEK_API_KEY
+        openai.api_base = DEEPSEEK_BASE_URL + "/v1"  # 注意需要添加 /v1
         self.system_prompt = SYSTEM_PROMPT
         self.model = DEEPSEEK_MODEL
         self.temperature = TEMPERATURE
@@ -35,7 +33,7 @@ class DeepSeekClient:
             self.messages.append({"role": "user", "content": user_input})
 
             print("难道要朕请你吗！")
-            response = self.client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model=self.model,
                 messages=self.messages,
                 temperature=self.temperature,
